@@ -66,5 +66,5 @@ jobs:
             -p 8000:8000 \
             snapl:${{ github.sha }}
           sleep 5
-          curl --fail http://localhost:8000/docs
+          curl --fail http://localhost:8000/
           docker stop snapl_smoke
