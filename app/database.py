@@ -1,4 +1,3 @@
-from datetime import timezone
 from sqlalchemy import (
     Boolean, Column, DateTime, ForeignKey, Integer, String, func,
 )
