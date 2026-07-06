@@ -1,0 +1,80 @@
+services:
+  db:
+    image: postgres:16-alpine
+    restart: unless-stopped
+    environment:
+      POSTGRES_USER: snapl
+      POSTGRES_PASSWORD: snapl
+      POSTGRES_DB: snapl
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U snapl"]
+      interval: 5s
+      timeout: 5s
+      retries: 10
+
+  redis:
+    image: redis:7-alpine
+    restart: unless-stopped
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 5s
+      timeout: 5s
+      retries: 10
+
+  api:
+    build: .
+    restart: unless-stopped
+    environment:
+      DATABASE_URL: postgresql://snapl:snapl@db:5432/snapl
+      REDIS_URL: redis://redis:6379/0
+      BASE_URL: ${BASE_URL:-http://localhost:5600}
+      DEFAULT_EXPIRY_DAYS: "30"
+      CACHE_TTL_SECONDS: "300"
+      RATE_LIMIT_PER_MINUTE: "60"
+      JWT_SECRET: ${JWT_SECRET:?JWT_SECRET must be set — run: export JWT_SECRET=$(openssl rand -hex 32)}
+      ADMIN_SECRET: ${ADMIN_SECRET:-}
+    depends_on:
+      db:
+        condition: service_healthy
+      redis:
+        condition: service_healthy
+    expose:
+      - "8000"
+
+  worker:
+    build: .
+    restart: unless-stopped
+    command: celery -A app.tasks worker --loglevel=info --concurrency=2
+    environment:
+      DATABASE_URL: postgresql://snapl:snapl@db:5432/snapl
+      REDIS_URL: redis://redis:6379/0
+    depends_on:
+      db:
+        condition: service_healthy
+      redis:
+        condition: service_healthy
+
+  beat:
+    build: .
+    restart: unless-stopped
+    command: celery -A app.tasks beat --loglevel=info
+    environment:
+      DATABASE_URL: postgresql://snapl:snapl@db:5432/snapl
+      REDIS_URL: redis://redis:6379/0
+    depends_on:
+      - worker
+
+  nginx:
+    image: nginx:alpine
+    restart: unless-stopped
+    ports:
+      - "5600:80"
+    volumes:
+      - ./nginx/nginx.conf:/etc/nginx/nginx.conf:ro
+    depends_on:
+      - api
+
+volumes:
+  postgres_data:
