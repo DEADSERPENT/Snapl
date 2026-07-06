@@ -1,8 +1,12 @@
 """Shared test infrastructure — SQLite DB + dependency override for all tests."""
 
+import os
+
 import pytest
 from sqlalchemy import create_engine
 from sqlalchemy.orm import sessionmaker
+
+os.environ.setdefault("ADMIN_SECRET", "test-admin-secret")
 
 from app.database import Base, get_db
 from app.main import app

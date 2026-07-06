@@ -31,6 +31,12 @@ class ShortenRequest(BaseModel):
             raise ValueError("Alias must be 2–32 characters")
         if not all(c.isalnum() or c in "-_" for c in v):
             raise ValueError("Alias may only contain letters, digits, hyphens, underscores")
+        _RESERVED = {
+            "admin", "api", "auth", "docs", "redoc", "openapi.json",
+            "shorten", "bulk", "stats", "analytics", "qr", "my-links",
+        }
+        if v.lower() in _RESERVED:
+            raise ValueError(f"Alias '{v}' is reserved")
         return v
 
 
@@ -115,6 +121,10 @@ class RegisterRequest(BaseModel):
     def validate_password(cls, v: str) -> str:
         if len(v) < 8:
             raise ValueError("Password must be at least 8 characters")
+        if not any(c.isupper() for c in v):
+            raise ValueError("Password must contain at least one uppercase letter")
+        if not any(c.isdigit() for c in v):
+            raise ValueError("Password must contain at least one digit")
         return v
 
 
@@ -127,6 +137,10 @@ class TokenResponse(BaseModel):
     access_token: str
     refresh_token: str
     token_type: str = "bearer"
+
+
+class RefreshRequest(BaseModel):
+    refresh_token: str
 
 
 class UserResponse(BaseModel):

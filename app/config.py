@@ -24,4 +24,4 @@ JWT_ALGORITHM = os.getenv("JWT_ALGORITHM", "HS256")
 JWT_EXPIRY_MINUTES = int(os.getenv("JWT_EXPIRY_MINUTES", "30"))
 
 # Free tier: ip-api.com — swap for MaxMind in production
-GEO_API_URL = os.getenv("GEO_API_URL", "http://ip-api.com/json/")
+GEO_API_URL = os.getenv("GEO_API_URL", "https://ip-api.com/json/")

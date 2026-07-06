@@ -15,6 +15,7 @@ from app.database import User, get_db
 from app.schemas import (
     APIKeyResponse,
     LoginRequest,
+    RefreshRequest,
     RegisterRequest,
     TokenResponse,
     UserResponse,
@@ -46,8 +47,8 @@ def login(body: LoginRequest, db: Session = Depends(get_db)):
 
 
 @router.post("/refresh", response_model=TokenResponse)
-def refresh(body: dict, db: Session = Depends(get_db)):
-    token = body.get("refresh_token", "")
+def refresh(body: RefreshRequest, db: Session = Depends(get_db)):
+    token = body.refresh_token
     try:
         payload = jwt.decode(token, JWT_SECRET, algorithms=[JWT_ALGORITHM])
         if not payload.get("refresh"):

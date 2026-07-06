@@ -1,3 +1,4 @@
+from html import escape
 from io import BytesIO
 from typing import List, Optional
 
@@ -287,7 +288,7 @@ def redirect(
         raise HTTPException(status_code=404, detail="Link not yet active")
 
     if result.status == ResolveStatus.PASSWORD_REQUIRED:
-        return HTMLResponse(_PASSWORD_FORM.format(code=short_code, error=""))
+        return HTMLResponse(_PASSWORD_FORM.format(code=escape(short_code), error=""))
 
     # Queue geo/device analytics without blocking the redirect
     if result.record_id:
@@ -329,7 +330,7 @@ async def unlock(
         )
     if result.status == ResolveStatus.PASSWORD_REQUIRED:
         return HTMLResponse(
-            _PASSWORD_FORM.format(code=short_code, error='<p class="err">Wrong password.</p>'),
+            _PASSWORD_FORM.format(code=escape(short_code), error='<p class="err">Wrong password.</p>'),
             status_code=401,
         )
 

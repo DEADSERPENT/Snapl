@@ -34,7 +34,7 @@ services:
       CACHE_TTL_SECONDS: "300"
       RATE_LIMIT_PER_MINUTE: "60"
       JWT_SECRET: ${JWT_SECRET:?JWT_SECRET must be set — run: export JWT_SECRET=$(openssl rand -hex 32)}
-      ADMIN_SECRET: ${ADMIN_SECRET:-}
+      ADMIN_SECRET: ${ADMIN_SECRET:?ADMIN_SECRET must be set — run: export ADMIN_SECRET=$(openssl rand -hex 16)}
     depends_on:
       db:
         condition: service_healthy

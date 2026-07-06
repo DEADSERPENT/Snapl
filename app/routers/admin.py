@@ -8,11 +8,11 @@ from app.database import get_db
 
 router = APIRouter(prefix="/admin", tags=["admin"])
 
-_ADMIN_SECRET = os.getenv("ADMIN_SECRET", "")
-
-
 def _require_admin(x_admin_secret: str = Header(default="")):
-    if not _ADMIN_SECRET or x_admin_secret != _ADMIN_SECRET:
+    secret = os.getenv("ADMIN_SECRET") or ""
+    if not secret:
+        raise HTTPException(status_code=503, detail="Admin endpoint not configured")
+    if x_admin_secret != secret:
         raise HTTPException(status_code=403, detail="Forbidden")
 
 

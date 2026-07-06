@@ -103,6 +103,8 @@ def test_purge_removes_expired_records():
     db.commit()
     db.close()
 
-    res = client.post("/admin/purge")
+    import os
+    secret = os.getenv("ADMIN_SECRET", "test-admin-secret")
+    res = client.post("/admin/purge", headers={"x-admin-secret": secret})
     assert res.status_code == 200
     assert res.json()["purged"] >= 1

@@ -13,24 +13,24 @@ client = TestClient(app, raise_server_exceptions=True)
 # ── Auth ──────────────────────────────────────────────────────────────────────
 
 def test_register_and_login():
-    r = client.post("/auth/register", json={"email": "u@test.com", "password": "secret123"})
+    r = client.post("/auth/register", json={"email": "u@test.com", "password": "Secret123"})
     assert r.status_code == 201
     assert r.json()["email"] == "u@test.com"
 
-    r2 = client.post("/auth/login", json={"email": "u@test.com", "password": "secret123"})
+    r2 = client.post("/auth/login", json={"email": "u@test.com", "password": "Secret123"})
     assert r2.status_code == 200
     assert "access_token" in r2.json()
     assert "refresh_token" in r2.json()
 
 
 def test_duplicate_email_is_rejected():
-    client.post("/auth/register", json={"email": "dup@test.com", "password": "secret123"})
-    r = client.post("/auth/register", json={"email": "dup@test.com", "password": "other1234"})
+    client.post("/auth/register", json={"email": "dup@test.com", "password": "Secret123"})
+    r = client.post("/auth/register", json={"email": "dup@test.com", "password": "Other1234"})
     assert r.status_code == 409
 
 
 def test_wrong_password_rejected():
-    client.post("/auth/register", json={"email": "x@test.com", "password": "correct99"})
+    client.post("/auth/register", json={"email": "x@test.com", "password": "Correct99"})
     r = client.post("/auth/login", json={"email": "x@test.com", "password": "wrong"})
     assert r.status_code == 401
 
@@ -41,32 +41,32 @@ def test_me_requires_auth():
 
 
 def test_me_returns_user():
-    client.post("/auth/register", json={"email": "me@test.com", "password": "pass1234"})
-    token = client.post("/auth/login", json={"email": "me@test.com", "password": "pass1234"}).json()["access_token"]
+    client.post("/auth/register", json={"email": "me@test.com", "password": "Pass1234"})
+    token = client.post("/auth/login", json={"email": "me@test.com", "password": "Pass1234"}).json()["access_token"]
     r = client.get("/auth/me", headers={"Authorization": f"Bearer {token}"})
     assert r.status_code == 200
     assert r.json()["email"] == "me@test.com"
 
 
 def test_api_key_rotation():
-    client.post("/auth/register", json={"email": "k@test.com", "password": "keykey12"})
-    token = client.post("/auth/login", json={"email": "k@test.com", "password": "keykey12"}).json()["access_token"]
+    client.post("/auth/register", json={"email": "k@test.com", "password": "Keykey12"})
+    token = client.post("/auth/login", json={"email": "k@test.com", "password": "Keykey12"}).json()["access_token"]
     r = client.post("/auth/api-key", headers={"Authorization": f"Bearer {token}"})
     assert r.status_code == 200
     assert "api_key" in r.json()
 
 
 def test_api_key_auth():
-    client.post("/auth/register", json={"email": "ak@test.com", "password": "apikey12"})
-    token = client.post("/auth/login", json={"email": "ak@test.com", "password": "apikey12"}).json()["access_token"]
+    client.post("/auth/register", json={"email": "ak@test.com", "password": "Apikey12"})
+    token = client.post("/auth/login", json={"email": "ak@test.com", "password": "Apikey12"}).json()["access_token"]
     api_key = client.post("/auth/api-key", headers={"Authorization": f"Bearer {token}"}).json()["api_key"]
     r = client.get("/auth/me", headers={"X-API-Key": api_key})
     assert r.status_code == 200
 
 
 def test_refresh_token():
-    client.post("/auth/register", json={"email": "rf@test.com", "password": "refresh1"})
-    tokens = client.post("/auth/login", json={"email": "rf@test.com", "password": "refresh1"}).json()
+    client.post("/auth/register", json={"email": "rf@test.com", "password": "Refresh1"})
+    tokens = client.post("/auth/login", json={"email": "rf@test.com", "password": "Refresh1"}).json()
     r = client.post("/auth/refresh", json={"refresh_token": tokens["refresh_token"]})
     assert r.status_code == 200
     assert "access_token" in r.json()
@@ -170,8 +170,8 @@ def test_past_starts_at_redirects():
 # ── Bulk shortening ───────────────────────────────────────────────────────────
 
 def _auth_headers():
-    client.post("/auth/register", json={"email": "bulk@test.com", "password": "bulk1234"})
-    token = client.post("/auth/login", json={"email": "bulk@test.com", "password": "bulk1234"}).json()["access_token"]
+    client.post("/auth/register", json={"email": "bulk@test.com", "password": "Bulk1234"})
+    token = client.post("/auth/login", json={"email": "bulk@test.com", "password": "Bulk1234"}).json()["access_token"]
     return {"Authorization": f"Bearer {token}"}
 
 
@@ -197,8 +197,8 @@ def test_bulk_requires_auth():
 # ── My links ──────────────────────────────────────────────────────────────────
 
 def test_my_links_returns_owned_links():
-    client.post("/auth/register", json={"email": "ml@test.com", "password": "mylink12"})
-    token = client.post("/auth/login", json={"email": "ml@test.com", "password": "mylink12"}).json()["access_token"]
+    client.post("/auth/register", json={"email": "ml@test.com", "password": "Mylink12"})
+    token = client.post("/auth/login", json={"email": "ml@test.com", "password": "Mylink12"}).json()["access_token"]
     headers = {"Authorization": f"Bearer {token}"}
 
     client.post("/shorten", json={"url": "https://example.com/owned"}, headers=headers)
@@ -210,8 +210,8 @@ def test_my_links_returns_owned_links():
 
 
 def test_delete_owned_link():
-    client.post("/auth/register", json={"email": "del@test.com", "password": "delete12"})
-    token = client.post("/auth/login", json={"email": "del@test.com", "password": "delete12"}).json()["access_token"]
+    client.post("/auth/register", json={"email": "del@test.com", "password": "Delete12"})
+    token = client.post("/auth/login", json={"email": "del@test.com", "password": "Delete12"}).json()["access_token"]
     headers = {"Authorization": f"Bearer {token}"}
 
     code = client.post("/shorten", json={"url": "https://example.com/todel"}, headers=headers).json()["short_code"]
@@ -221,16 +221,16 @@ def test_delete_owned_link():
 
 
 def test_cannot_delete_others_link():
-    client.post("/auth/register", json={"email": "a@test.com", "password": "aaaaaa12"})
-    token_a = client.post("/auth/login", json={"email": "a@test.com", "password": "aaaaaa12"}).json()["access_token"]
+    client.post("/auth/register", json={"email": "a@test.com", "password": "Aaaaaa12"})
+    token_a = client.post("/auth/login", json={"email": "a@test.com", "password": "Aaaaaa12"}).json()["access_token"]
     code = client.post(
         "/shorten",
         json={"url": "https://example.com/a-link"},
         headers={"Authorization": f"Bearer {token_a}"},
     ).json()["short_code"]
 
-    client.post("/auth/register", json={"email": "b@test.com", "password": "bbbbbb12"})
-    token_b = client.post("/auth/login", json={"email": "b@test.com", "password": "bbbbbb12"}).json()["access_token"]
+    client.post("/auth/register", json={"email": "b@test.com", "password": "Bbbbbb12"})
+    token_b = client.post("/auth/login", json={"email": "b@test.com", "password": "Bbbbbb12"}).json()["access_token"]
     r = client.delete(f"/my-links/{code}", headers={"Authorization": f"Bearer {token_b}"})
     assert r.status_code == 404
 
