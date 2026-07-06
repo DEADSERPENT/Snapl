@@ -11,14 +11,12 @@ from app import codec
 from app.auth import hash_password, verify_password
 from app.cache import cache
 from app.config import BASE_URL, DEFAULT_EXPIRY_DAYS, GEO_API_URL
-from app.database import ClickEvent, SessionLocal, URLRecord, User
+from app.database import ClickEvent, SessionLocal, URLRecord
 from app.schemas import (
     AnalyticsResponse,
-    BulkItem,
     ClickEventOut,
     ShortenResponse,
     StatsResponse,
-    UserResponse,
 )
 
 

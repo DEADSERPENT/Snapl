@@ -3,7 +3,6 @@ Integration tests using an in-process SQLite DB (no Postgres needed to run tests
 FastAPI's TestClient exercises the full request/response cycle.
 """
 
-import pytest
 from fastapi.testclient import TestClient
 
 from app.database import URLRecord
